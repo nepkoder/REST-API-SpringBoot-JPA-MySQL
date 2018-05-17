@@ -57,14 +57,14 @@ public class PersonController {
 	}
 
 	// create a person that means, post mapping
-	@PostMapping("/person")
+	@PostMapping("/persons")
 	public ResponseEntity<Person> createPerson(@RequestBody Person person) {
 
 		return new ResponseEntity<Person>(personService.save(person), HttpStatus.CREATED);
 	}
 
 	// for update, use putmapping
-	@PutMapping("/person/{id}")
+	@PutMapping("/persons/{id}")
 	public ResponseEntity<Person> updatePerson(@RequestBody Person person, int personId) {
 
 		Person updatedPerson = personService.getPersonById(personId);
@@ -78,7 +78,7 @@ public class PersonController {
 	}
 
 	// for delete, using deletemapping
-	@DeleteMapping("/person/{id}")
+	@DeleteMapping("/persons/{id}")
 	// @ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity delete(@PathVariable int id) {
 		personService.delete(id);
