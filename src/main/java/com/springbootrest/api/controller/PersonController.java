@@ -36,6 +36,11 @@ public class PersonController {
 	public ResponseEntity<Person> getPersonId(@PathVariable int id) {
 		// System.out.println("======================================");
 		logger.info("Getting person id {}", id);
+		
+		Person person = personService.getPersonById(id);
+		if (person==null) {
+			return new ResponseEntity<Person>("Person NO Found",HttpStatus.NOT_FOUND);
+		}
 
 		return new ResponseEntity<Person>(personService.getPersonById(id), HttpStatus.OK);
 
