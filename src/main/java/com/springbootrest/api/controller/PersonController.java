@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springbootrest.api.UserNotFoundException;
 import com.springbootrest.api.entity.Person;
 import com.springbootrest.api.service.PersonService;
 
@@ -36,10 +38,10 @@ public class PersonController {
 	public ResponseEntity<Person> getPersonId(@PathVariable int id) {
 		// System.out.println("======================================");
 		logger.info("Getting person id {}", id);
-		
+
 		Person person = personService.getPersonById(id);
-		if (person==null) {
-			return new ResponseEntity<Person>("Person NO Found",HttpStatus.NOT_FOUND);
+		if (person == null) {
+			throw new UserNotFoundException("person Id " + id + " is not found error.");
 		}
 
 		return new ResponseEntity<Person>(personService.getPersonById(id), HttpStatus.OK);
@@ -51,10 +53,15 @@ public class PersonController {
 	public ResponseEntity<List<Person>> getAllList() {
 
 		List<Person> getAll = personService.findAll();
-		if (getAll == null) {
-			return new ResponseEntity<List<Person>>(HttpStatus.NOT_FOUND);
 
+		if (getAll.isEmpty()) {
+			return new ResponseEntity<List<Person>>(HttpStatus.NO_CONTENT);
 		}
+
+		// if (getAll == null) {
+		// return new ResponseEntity<List<Person>>(HttpStatus.NOT_FOUND);
+		//
+		// }
 		// List<Person> lists = personService.findAll(); // findAll() returns Object so,
 		// need type casting
 
@@ -69,24 +76,45 @@ public class PersonController {
 	}
 
 	// for update, use putmapping
-	@PutMapping("/persons/{id}")
-	public ResponseEntity<Person> updatePerson(@RequestBody Person person, int personId) {
+	// @PutMapping("/persons/{id}")
+	@RequestMapping(value = "/persons/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Person> updatePerson(@PathVariable("id") int id, @RequestBody Person person) {
 
-		Person updatedPerson = personService.getPersonById(personId);
+		logger.info("Getting person id {}", id);
+		Person updatedPerson = personService.getPersonById(id);
 
-		updatedPerson.setName("Sujan Shrestha");
-		updatedPerson.setAddress("Kathmandu");
-		updatedPerson.setEmail("Sujansth@hotmail.com");
-		updatedPerson.setActive(true);
-		updatedPerson.setPhone("1234454");
-		return new ResponseEntity<Person>(updatedPerson, HttpStatus.OK);
+		if (updatedPerson == null) {
+			logger.error("unable to update");
+			throw new UserNotFoundException("update failed. user id " + id + " not found");
+		}
+
+		// updatedPerson.setName("Sujan Shrestha - updated");
+		// updatedPerson.setAddress("Kathmandu -updated");
+		// updatedPerson.setEmail("Sujansth@hotmail.com - updated");
+		// updatedPerson.setActive(true);
+		// updatedPerson.setPhone("1234454 - updated");
+
+		updatedPerson.setName(person.getName());
+		updatedPerson.setAddress(person.getAddress());
+		updatedPerson.setEmail(person.getEmail());
+		updatedPerson.setPhone(person.getPhone());
+		updatedPerson.setActive(person.isActive());
+
+		return new ResponseEntity<Person>(personService.update(updatedPerson), HttpStatus.OK);
 	}
 
 	// for delete, using deletemapping
 	@DeleteMapping("/persons/{id}")
 	// @ResponseStatus(HttpStatus.NO_CONTENT)
-	public ResponseEntity delete(@PathVariable int id) {
+	public ResponseEntity<Person> delete(@PathVariable int id) {
 		personService.delete(id);
-		return new ResponseEntity(HttpStatus.OK);
+		return new ResponseEntity<Person>(HttpStatus.NO_CONTENT);
+		// return type void gardaa feri reponse status diney !!
+	}
+
+	@DeleteMapping("/persons")
+	public ResponseEntity<Person> deleteAll() {
+		personService.deleteAllPersons();
+		return new ResponseEntity<Person>(HttpStatus.NO_CONTENT);
 	}
 }

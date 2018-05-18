@@ -31,6 +31,15 @@ public class Person {
 
 	}
 
+	public Person(String name, String address, String email, String phone, boolean isActive) {
+		super();
+		this.name = name;
+		this.address = address;
+		this.email = email;
+		this.phone = phone;
+		this.isActive = isActive;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -77,6 +86,14 @@ public class Person {
 
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	// to string generation
+
+	@Override
+	public String toString() {
+		return "Person [id=" + id + ", name=" + name + ", address=" + address + ", email=" + email + ", phone=" + phone
+				+ ", isActive=" + isActive + "]";
 	}
 
 }

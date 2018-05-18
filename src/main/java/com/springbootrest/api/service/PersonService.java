@@ -1,10 +1,10 @@
 package com.springbootrest.api.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.springbootrest.api.entity.Person;
 import com.springbootrest.api.repository.PersonRepository;
@@ -28,10 +28,18 @@ public class PersonService {
 	}
 
 	public void delete(int id) {
+
 		personRepository.deleteById(id);
+
 	}
 
 	public Person update(Person person) {
+
+		// person = getPersonById(id);
 		return personRepository.save(person);
+	}
+
+	public void deleteAllPersons() {
+		personRepository.deleteAll();
 	}
 }
